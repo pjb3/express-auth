@@ -1,8 +1,13 @@
 var React = require('react');
+var Layout = require('./layout');
 
 var Homepage = React.createClass({
   render: function() {
-    return <h1>User Count: {this.props.userCount}</h1>;
+    return (
+      <Layout>
+        <h1>User Count: {this.props.userCount}</h1>
+      </Layout>
+    );
   }
 })
 
