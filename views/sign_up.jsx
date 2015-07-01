@@ -27,7 +27,7 @@ var SignUp = React.createClass({
                 {errorMessage}
                 <div className="form-group">
                   <label for="email">Email address</label>
-                  <input type="email" className="form-control" id="email" placeholder="Email" name="email" />
+                  <input type="email" className="form-control" id="email" placeholder="Email" name="emailAddress" value={this.props.emailAddress} />
                 </div>
                 <div className="form-group">
                   <label for="password">Password</label>
