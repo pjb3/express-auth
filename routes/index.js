@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+var users = require('../services/users');
 var conString = process.env.DATABASE_URL || "postgres://localhost/auth";
 
 /* GET home page. */
@@ -25,12 +26,21 @@ router.get('/', function(req, res) {
 });
 
 router.get('/sign_up', function(req, res) {
-  res.render('sign_up')
+  res.render('sign_up');
 });
 
 router.post('/sign_up', function(req, res) {
-  console.log(req.body);
-  res.json(req.body);
+  console.log('Looking for email='+req.body.email);
+  users.findByEmailAddress(req.body.email, function(user) {
+    if(user) {
+      res.render('sign_up', { email: req.body.email, error: 'User already exists' });
+    } else{
+      users.createUser({ email: req.body.email, password: req.body.password }, function(user){
+        console.log("User "+user.id+" created");
+        res.redirect('/');
+      });
+    }
+  });
 });
 
 module.exports = router;

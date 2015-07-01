@@ -1,8 +1,20 @@
 var React = require('react');
 var Layout = require('./layout');
 
+var ErrorMessage = React.createClass({
+  render: function() {
+    return <div className="alert alert-danger" role="alert">{this.props.message}</div>;
+  }
+});
+
 var SignUp = React.createClass({
   render: function() {
+    var errorMessage;
+
+    if(this.props.error) {
+      errorMessage = <ErrorMessage message={this.props.error} />;
+    }
+
     return (
       <Layout>
         <div className="container">
@@ -12,6 +24,7 @@ var SignUp = React.createClass({
             </div>
             <div className="panel-body">
               <form method="post" action="/sign_up">
+                {errorMessage}
                 <div className="form-group">
                   <label for="email">Email address</label>
                   <input type="email" className="form-control" id="email" placeholder="Email" name="email" />
@@ -28,6 +41,6 @@ var SignUp = React.createClass({
       </Layout>
     );
   }
-})
+});
 
 module.exports = SignUp;
