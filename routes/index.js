@@ -4,7 +4,7 @@ var pg = require('pg');
 var conString = process.env.DATABASE_URL || "postgres://localhost/auth";
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   pg.connect(conString, function(err, client, done) {
     if (err) {
       console.error('error fetching client from pool', err);
@@ -22,6 +22,15 @@ router.get('/', function(req, res, next) {
       }
     });
   });
+});
+
+router.get('/sign_up', function(req, res) {
+  res.render('sign_up')
+});
+
+router.post('/sign_up', function(req, res) {
+  console.log(req.body);
+  res.json(req.body);
 });
 
 module.exports = router;
