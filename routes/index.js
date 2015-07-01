@@ -4,6 +4,7 @@ var users = require('../services/users');
 
 /* GET home page. */
 router.get('/', function(req, res) {
+  console.log("Logged in as"+ req.signedCookies.userId);
   res.render('index');
 });
 
@@ -19,6 +20,7 @@ router.post('/sign_up', function(req, res) {
     } else{
       users.createUser({ emailAddress: req.body.emailAddress, password: req.body.password }, function(user){
         console.log("User "+user.id+" created");
+        res.cookie('userId', user.id, { signed: true });
         res.redirect('/');
       });
     }
