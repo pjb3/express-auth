@@ -1,5 +1,6 @@
 var pg = require('pg')
 var conString = process.env.DATABASE_URL || "postgres://localhost/auth"
+var bcrypt = require('bcrypt')
 
 module.exports = {
   findById: function(id, cb) {
@@ -27,7 +28,7 @@ module.exports = {
         console.log(err)
         throw(err)
       }
-      client.query('SELECT id, email_address as "emailAddress", password FROM users WHERE email_address = $1', [emailAddress], function(err, result) {
+      client.query('SELECT id, email_address as "emailAddress", password_hash FROM users WHERE email_address = $1', [emailAddress], function(err, result) {
         done()
         if (err) {
           console.log(err)
@@ -41,8 +42,14 @@ module.exports = {
 
   authenticate: function(emailAddress, password, cb) {
     this.findByEmailAddress(emailAddress, function(user) {
-      if(user && user.password == password) {
-        cb(user)
+      if(user) {
+        bcrypt.compare(password, user.password_hash, function(err, res) {
+          if(res) {
+            cb(user)
+          } else {
+            cb(null)
+          }
+        })
       } else {
         cb(null)
       }
@@ -56,15 +63,19 @@ module.exports = {
         throw(err)
       }
 
-      client.query('INSERT INTO users (email_address, password, created_at, updated_at) VALUES ($1, $2, now(), now()) RETURNING id', [user.emailAddress, user.password], function(err, result) {
-        done()
-        if (err) {
-          console.log(err)
-          throw(err)
-        }
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(user.password, salt, function(err, hash) {
+          client.query('INSERT INTO users (email_address, password_hash, created_at, updated_at) VALUES ($1, $2, now(), now()) RETURNING id', [user.emailAddress, hash], function(err, result) {
+            done()
+            if (err) {
+              console.log(err)
+              throw(err)
+            }
 
-        user.id = result.rows[0].id
-        cb(user)
+            user.id = result.rows[0].id
+            cb(user)
+          })
+        })
       })
     })
   }
