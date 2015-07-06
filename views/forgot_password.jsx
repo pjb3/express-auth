@@ -7,7 +7,7 @@ var ErrorMessage = React.createClass({
   }
 });
 
-var LogIn = React.createClass({
+module.exports = React.createClass({
   render: function() {
     var errorMessage;
 
@@ -20,24 +20,16 @@ var LogIn = React.createClass({
         <div className="container">
           <div className="panel panel-default">
             <div className="panel-heading">
-              <h3 className="panel-title">Log In</h3>
+              <h3 className="panel-title">Forgot Password</h3>
             </div>
             <div className="panel-body">
-              <form method="post" action="/log_in">
+              <form method="post" action="/forgot_password">
                 {errorMessage}
                 <div className="form-group">
                   <label for="email">Email Address</label>
                   <input type="email" className="form-control" id="email" placeholder="Email" name="emailAddress" defaultValue={this.props.emailAddress} />
                 </div>
-                <div className="form-group">
-                  <label for="password">Password</label>
-                  <input type="password" className="form-control" id="password" placeholder="Password" name="password" />
-                </div>
-                <button type="submit" className="btn btn-success">Log In</button>
-                <div className="form-group">
-                  <br />
-                  <a href="/forgot_password">Forgot your password?</a>
-                </div>
+                <button type="submit" className="btn btn-success">Send Password Reset Instructions</button>
               </form>
             </div>
           </div>
@@ -46,5 +38,3 @@ var LogIn = React.createClass({
     );
   }
 });
-
-module.exports = LogIn;

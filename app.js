@@ -4,22 +4,33 @@ var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
+var mailer = require('express-mailer')
+var engines = require('consolidate')
 
 var routes = require('./routes/index')
 
 var app = express()
 
+// mailer setup
+mailer.extend(app, {
+  from: 'help@example.com',
+  host: 'localhost',
+  port: 1025
+})
+
 // view engine setup
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jsx')
 app.engine('jsx', require('express-react-views').createEngine())
+app.engine('ejs', require('ejs').renderFile)
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'))
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser(process.env.SECRET_KEY || 'too many secrets'))
+app.set('secret_key', process.env.SECRET_KEY || 'too many secrets')
+app.use(cookieParser(app.get('secret_key')))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', routes)
@@ -30,6 +41,8 @@ app.use(function(req, res, next) {
   err.status = 404
   next(err)
 })
+
+app.set('default_host', process.env.DEFAULT_HOST || 'localhost:3000')
 
 // error handlers
 

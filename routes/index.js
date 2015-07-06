@@ -56,4 +56,33 @@ router.get('/log_out', function(req, res) {
   res.clearCookie('userId').redirect('/')
 })
 
+router.get('/forgot_password', function(req, res) {
+  res.render('forgot_password')
+})
+
+router.post('/forgot_password', function(req, res) {
+  users.findByEmailAddress(req.body.emailAddress, function(user) {
+    if(user) {
+      req.app.mailer.send('password_reset_email.ejs', {
+        to: user.emailAddress,
+        subject: 'Password Reset Instructions',
+        resetLink: 'http://'+req.app.get('default_host')+'/reset_password'
+      }, function (err) {
+        if (err) {
+          console.log(err);
+          res.send('There was an error sending the email');
+          return;
+        }
+        res.redirect('/password_reset_sent')
+      });
+    } else {
+      res.render('forgot_password', { emailAddress: req.body.emailAddress, error: 'Account not found' })
+    }
+  })
+})
+
+router.get('/password_reset_sent', function(req, res) {
+  res.render('password_reset_sent')
+})
+
 module.exports = router
