@@ -4,20 +4,21 @@ var users = require('../services/users')
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  if(req.signedCookies.userId) {
-    console.log("Looking for user with ID="+req.signedCookies.userId)
-    users.findById(req.signedCookies.userId, function(user){
-      if(user) {
-        console.log("Logged in as "+ user.emailAddress)
-      } else {
-        console.log("Could not find user with ID="+req.signedCookies.userId)
-      }
-      res.render('index', { currentUser: user })
-    })
-  } else {
+  if(!req.signedCookies.userId) {
     console.log("Not Logged in")
     res.render('index')
+    return
   }
+
+  console.log("Looking for user with ID="+req.signedCookies.userId)
+  users.findById(req.signedCookies.userId, function(user){
+    if(user) {
+      console.log("Logged in as "+ user.emailAddress)
+    } else {
+      console.log("Could not find user with ID="+req.signedCookies.userId)
+    }
+    res.render('index', { currentUser: user })
+  })
 })
 
 router.get('/sign_up', function(req, res) {
