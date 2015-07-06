@@ -14,10 +14,8 @@ function loadUser(req, res, next) {
     } else {
       console.log("Could not find user with ID="+req.signedCookies.userId)
     }
+    next()
   })
-
-  // Whoops, this needs to be inside the callback
-  next()
 }
 
 /* GET home page. */
