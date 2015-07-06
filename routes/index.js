@@ -2,23 +2,27 @@ var express = require('express')
 var router = express.Router()
 var users = require('../services/users')
 
-/* GET home page. */
-router.get('/', function(req, res) {
-  if(!req.signedCookies.userId) {
-    console.log("Not Logged in")
-    res.render('index')
-    return
-  }
+function loadUser(req, res, next) {
+  if(!req.signedCookies.userId)
+    return next()
 
   console.log("Looking for user with ID="+req.signedCookies.userId)
   users.findById(req.signedCookies.userId, function(user){
     if(user) {
       console.log("Logged in as "+ user.emailAddress)
+      req.user = user
     } else {
       console.log("Could not find user with ID="+req.signedCookies.userId)
     }
-    res.render('index', { currentUser: user })
   })
+
+  // Whoops, this needs to be inside the callback
+  next()
+}
+
+/* GET home page. */
+router.get('/', loadUser, function(req, res) {
+  res.render('index', { currentUser: req.user })
 })
 
 router.get('/sign_up', function(req, res) {
