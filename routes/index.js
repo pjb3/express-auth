@@ -2,6 +2,10 @@ var express = require('express')
 var router = express.Router()
 var users = require('../services/users')
 
+var redis = require("redis")
+
+var client = redis.createClient()
+
 function loadUser(req, res, next) {
   if(!req.signedCookies.userId)
     return next()
@@ -66,18 +70,10 @@ router.get('/forgot_password', function(req, res) {
 router.post('/forgot_password', function(req, res) {
   users.findByEmailAddress(req.body.emailAddress, function(user) {
     if(user) {
-      req.app.mailer.send('password_reset_email.ejs', {
-        to: user.emailAddress,
-        subject: 'Password Reset Instructions',
-        resetLink: 'http://'+req.app.get('default_host')+'/reset_password'
-      }, function (err) {
-        if (err) {
-          console.log(err);
-          res.send('There was an error sending the email');
-          return;
-        }
+      client.lpush('reset_password_mailer', user.emailAddress, function(cb){
+        console.log('Queued job')
         res.redirect('/password_reset_sent')
-      });
+      })
     } else {
       res.render('forgot_password', { emailAddress: req.body.emailAddress, error: 'Account not found' })
     }

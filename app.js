@@ -12,11 +12,24 @@ var routes = require('./routes/index')
 var app = express()
 
 // mailer setup
-mailer.extend(app, {
+
+var mailtrap = {
   from: 'help@example.com',
-  host: 'localhost',
-  port: 1025
-})
+  host: "mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "38910dd4e462b8a6a",
+    pass: "1a643ca94898de"
+  }
+}
+
+var mailcatcher = {
+  from: 'help@example.com',
+  host: "localhost",
+  port: 1025,
+}
+
+mailer.extend(app, mailcatcher)
 
 // view engine setup
 app.set('views', __dirname + '/views')
