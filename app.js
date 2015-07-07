@@ -18,8 +18,8 @@ var mailtrap = {
   host: "mailtrap.io",
   port: 2525,
   auth: {
-    user: "38910dd4e462b8a6a",
-    pass: "1a643ca94898de"
+    user: "38910c6babe4b5f9d",
+    pass: "39aa489272fe94"
   }
 }
 
@@ -29,7 +29,7 @@ var mailcatcher = {
   port: 1025,
 }
 
-mailer.extend(app, mailcatcher)
+mailer.extend(app, mailtrap)
 
 // view engine setup
 app.set('views', __dirname + '/views')
